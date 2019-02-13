@@ -1,5 +1,6 @@
 package com.stackroute.plasma.nlp.controller;
 
+import com.stackroute.plasma.nlp.service.StopWord;
 import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.pipeline.CoreDocument;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
@@ -19,7 +20,8 @@ public class NlpController {
 
     @Autowired
     private StanfordCoreNLP stanfordCoreNLP;
-
+   // @Autowired
+    StopWord stopWord = new StopWord();
     @PostMapping("/token")
     public List<String> convertToToken(@RequestBody final String input) {
         CoreDocument coreDocument = new CoreDocument(input);
@@ -42,8 +44,11 @@ public class NlpController {
         for (CoreLabel coreLabel: coreLabels
         ) {
             lemma = coreLabel.lemma();
-            finalString.add(lemma);
-            System.out.println(lemma);
+            if (!(stopWord.getStopwords().contains(lemma))) {
+                finalString.add(lemma);
+            }
+            // finalString.add(lemma);
+            // System.out.println(lemma);
         }
        // return coreLabels.stream().map(CoreLabel::originalText).collect(Collectors.toList());
         return finalString.stream().map(String::toString).collect(Collectors.toList());
